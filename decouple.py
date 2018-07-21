@@ -84,6 +84,9 @@ class Config(object):
         """
         return self.get(*args, **kwargs)
 
+    def items(self):
+        return self.repository.items()
+
 
 class RepositoryEmpty(object):
     def __init__(self, source=''):
@@ -95,6 +98,9 @@ class RepositoryEmpty(object):
     def __getitem__(self, key):
         return None
 
+    def items(self):
+        return ()
+
 
 class RepositoryIni(RepositoryEmpty):
     """
@@ -104,6 +110,7 @@ class RepositoryIni(RepositoryEmpty):
 
     def __init__(self, source):
         self.parser = ConfigParser()
+        self.parser.optionxform = str
         with open(source) as file_:
             self.parser.readfp(file_)
 
@@ -113,6 +120,9 @@ class RepositoryIni(RepositoryEmpty):
 
     def __getitem__(self, key):
         return self.parser.get(self.SECTION, key)
+
+    def items(self):
+        return self.parser.items(self.SECTION)
 
 
 class RepositoryEnv(RepositoryEmpty):
@@ -137,6 +147,9 @@ class RepositoryEnv(RepositoryEmpty):
 
     def __getitem__(self, key):
         return self.data[key]
+
+    def items(self):
+        return self.data.items()
 
 
 class AutoConfig(object):
